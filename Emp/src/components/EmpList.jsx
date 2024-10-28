@@ -4,17 +4,38 @@ import axios from "axios"
 
 const EmpList=()=>{
     const [details, setDetails]=useState([])
+    const [seremp, setSerEmp]=useState([])
+    const [filteredemp, setFilteredEmp]=useState([])
     const [editing, setEditing]=useState(false)
-    const [currentDetail, setCurrentDetail]=useState({id:null,name:"", address:"", position:"" , salary:null,experience:null, email:"" ,empid:null})
+    const [currentDetail, setCurrentDetail]=useState({id:null, empid:null,name:"", address:"", position:"" , salary:null,experiance:null, email:"" , phone:null})
 
 
     useEffect(()=>{
-        axios.get("https://aiswarya2325.pythonanywhere.com/employemanagement/employees/")
-        .then(response=>setDetails(response.data))
+        axios.get("https://alan2325.pythonanywhere.com/employe/employees/")
+        .then(response=>{
+            setDetails(response.data)
+            setFilteredEmp(response.data)
+
+        })
         .catch(error=>console.log(error)
         )
     },[])
  
+
+
+    const deleteDetail =(id)=>{
+        axios.delete(`https://alan2325.pythonanywhere.com/employe/employees/${id}/`)
+        .then(response=>{
+            setTasks(details.filter(detail.id !==id))
+        })
+        .catch(error=>console.log(error)
+        )
+
+    }
+
+
+
+
 
     const editDetail=(detail)=>{
 
@@ -27,7 +48,7 @@ const EmpList=()=>{
 
     const updateDetail=(id,updateDetail)=>{
         setEditing(false)
-        axios.put(`https://aiswarya2325.pythonanywhere.com/employemanagement/employees/${id}/`,updateDetail)
+        axios.put(`https://alan2325.pythonanywhere.com/employe/employees/${id}/`,updateDetail)
         .then(response=>{
             setDetails(details.map(detail=>(detail.id === id ? response.data :detail)))
         })
@@ -36,25 +57,52 @@ const EmpList=()=>{
     }
 
 
+
+    useEffect(()=>{
+        const result=details.filter(detail=>
+            detail.name.includes(seremp)  ||  detail.address.includes(seremp) || detail.position.includes(seremp)
+            || detail.empid.toString().includes(seremp) ||  detail.salary.toString().includes(seremp)  
+        )
+        setFilteredEmp(result)
+    },[seremp,details])
+
+
+
+
+
     return(
         <div className="container-mt-3">
             <h2 className="text-center">Employee Management</h2>
+            <input type="text" placeholder="Search" value={seremp} onChange={(e)=>setSerEmp(e.target.value)} />
             <table className="table table-border table-hover">
-                <thead>
-                {details.map(detail=>(
-                    <tr key={detail.id}>
+                    <thead className="text-decoration-underline">
+                        <tr>
+                        <td>Empid</td>
+                        <td>Name</td>
+                        <td>Address</td>
+                        <td>Position</td>
+                        <td>Salary</td>
+                        <td>Experiance</td>
+                        <td>Email</td>
+                        <td>Phone</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {filteredemp.map(detail=>(
+                    <tr key={detail.id}>                     
+                       <td>{detail.empid}</td>
                         <td>{detail.name}</td>
                         <td>{detail.address}</td>
                         <td>{detail.position}</td>
                         <td>{detail.salary}</td>
-                        <td>{detail.experience}</td>
+                        <td>{detail.experiance}</td>
                         <td>{detail.email}</td>
-                        <td>{detail.empid}</td>
+                        <td>{detail.phone}</td>
                         <td><button className="btn btn-primary px-3" onClick={()=>editDetail(detail)}>Edit</button></td>
                         <td><button className="btn btn-danger" onClick={()=>deleteDetail(detail.id)}>Delete</button></td>
                     </tr>
                 ))}
-                </thead>
+                </tbody>
             </table>
             {editing ?(
                 <EditDetailForm currentDetail={currentDetail} updateDetail={updateDetail}/>
@@ -87,21 +135,41 @@ const EditDetailForm=({ currentDetail,updateDetail})=>{
 
     return(
         <div className="container">
-        <form onSubmit={handleSubmit}>
-            <h2>Edit Details</h2>
+        <form className="" onSubmit={handleSubmit}>
+            <h2 className="my-5">Edit Details</h2>
+            <div>
+                <label className="text-dark">Emp ID</label>
+                <input className="form-control" type="tel" name="empid" value={detail.empid} onChange={handleInputChange} />
+            </div>
             <div>
                 <label>Name</label>
-                <input type="text" name="name" value={detail.name} onChange={handleInputChange} />
+                <input className="form-control" type="text" name="name" value={detail.name} onChange={handleInputChange} />
             </div>
             <div>
                 <label>Address</label>
-                <textarea name="address" value={detail.address} onChange={handleInputChange}/>
+                <textarea className="form-control" name="address" value={detail.address} onChange={handleInputChange}/>
             </div>
             <div>
                 <label>Position</label>
-                <input type="text" name="" value={detail.name} onChange={handleInputChange} />
+                <input className="form-control" type="text" name="position" value={detail.position} onChange={handleInputChange} />
             </div>
-            <button type="submit" className="btn btn-success">Update Details</button>
+            <div>
+                <label>Salary</label>
+                <input className="form-control" type="tel" name="salary" value={detail.salary} onChange={handleInputChange} />
+            </div>
+            <div>
+                <label>Experience</label>
+                <input className="form-control" type="text" name="experiance" value={detail.experiance} onChange={handleInputChange} />
+            </div>
+            <div>
+                <label>Phone</label>
+                <input className="form-control" type="tel" name="phone" value={detail.phone} onChange={handleInputChange} />
+            </div>
+            <div>
+                <label>Email</label>
+                <input  className="form-control" type="email" name="email" value={detail.email} onChange={handleInputChange} />
+            </div>
+            <button type="submit" className="btn btn-success mt-2">Update Details</button>
         </form>
         </div>
     )
