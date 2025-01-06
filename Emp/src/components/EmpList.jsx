@@ -11,7 +11,7 @@ const EmpList=()=>{
 
 
     useEffect(()=>{
-        axios.get("https://alan2325.pythonanywhere.com/employe/employees/")
+        axios.get("http://127.0.0.1:8000/api/emp/")
         .then(response=>{
             setDetails(response.data)
             setFilteredEmp(response.data)
@@ -24,7 +24,7 @@ const EmpList=()=>{
 
 
     const deleteDetail =(id)=>{
-        axios.delete(`https://alan2325.pythonanywhere.com/employe/employees/${id}/`)
+        axios.delete(`http://127.0.0.1:8000/api/emp/${id}/`)
         .then(response=>{
             setTasks(details.filter(detail.id !==id))
         })
@@ -48,7 +48,7 @@ const EmpList=()=>{
 
     const updateDetail=(id,updateDetail)=>{
         setEditing(false)
-        axios.put(`https://alan2325.pythonanywhere.com/employe/employees/${id}/`,updateDetail)
+        axios.put(`http://127.0.0.1:8000/api/emp/${id}/`,updateDetail)
         .then(response=>{
             setDetails(details.map(detail=>(detail.id === id ? response.data :detail)))
         })
